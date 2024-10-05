@@ -292,51 +292,104 @@
     // Carregar os links ao iniciar a página
     loadLinks();
 
-    // Manipulação do formulário de feedback
-    document.getElementById('feedbackForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
+    // Estrutura para armazenar contagem de feedbacks e bloqueios
+const feedbackCount = {};
+const blockTime = {}; // Armazena o tempo de bloqueio
+const offensiveWords = [
+    'gozar', 'cu', 'delicia', 'safado', 'cuzin', 'rola', 'pau'
+]; // Adicione suas palavras ofensivas aqui
 
-        const name = document.getElementById('feedbackName').value;
-        const message = document.getElementById('feedbackMessage').value;
+document.getElementById('feedbackForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
 
-        // Validação básica
-        if (!name || !message) {
-            alert("Por favor, preencha todos os campos.");
-            return;
+    const name = document.getElementById('feedbackName').value.trim();
+    const message = document.getElementById('feedbackMessage').value.trim();
+
+    // Validação básica
+    if (!name || !message) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+    }
+
+    // Verifica se o usuário está bloqueado
+    const currentTime = Date.now();
+    if (blockTime[name] && (currentTime - blockTime[name]) < 60000) { // 1 minuto em milissegundos
+        alert("Você está bloqueado de enviar feedbacks por 1 minuto devido ao abuso.");
+        return;
+    }
+
+    // Verifica se a mensagem contém palavras ofensivas
+    const containsOffensiveWords = offensiveWords.some(word => message.toLowerCase().includes(word));
+    if (containsOffensiveWords) {
+        alert("Sua mensagem contém palavras ofensivas e não pode ser enviada.");
+        return;
+    }
+
+    // Contabiliza o feedback
+    feedbackCount[name] = (feedbackCount[name] || 0) + 1;
+
+    // Verifica se o usuário está abusando
+    if (feedbackCount[name] > 3) { // Defina um limite, por exemplo, 3
+        alert("Você está abusando do sistema de feedback. Por favor, explique o motivo.");
+        blockTime[name] = currentTime; // Bloqueia o usuário
+        notifyAdmin(name);
+        return;
+    }
+
+    // Montando a mensagem de feedback
+    const feedbackMessage = `Feedback Registrado:\n\nNome: ${name}\nMensagem: ${message}`;
+
+    // Defina o URL do bot do Telegram
+    const token = "7545142881:AAHD_s9gLTIpOUqHDfnu1_rGtDytwaerf_g"; // Insira seu token do bot
+    const feedbackChatId = "-1002211965858"; // Insira seu chat ID do grupo de feedback
+
+    // Enviando o feedback para o Telegram
+    try {
+        const feedbackResponse = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chat_id: feedbackChatId,
+                text: feedbackMessage
+            })
+        });
+
+        // Verifica se a resposta é OK
+        if (!feedbackResponse.ok) {
+            throw new Error('Erro ao enviar feedback para o Telegram');
         }
 
-        // Montando a mensagem a ser enviada
-        const feedbackMessage = `Feedback Registrado :\n\nNome: ${name}\nMensagem: ${message}`;
+        // Limpa o formulário após o envio
+        document.getElementById('feedbackForm').reset();
 
-        // Defina o URL do bot do Telegram
-        const token = "7545142881:AAHD_s9gLTIpOUqHDfnu1_rGtDytwaerf_g"; // Insira seu token do bot
-        const chatId = "-1002211965858"; // Insira seu chat ID
+        alert("Feedback enviado com sucesso!");
+    } catch (error) {
+        console.error(error);
+        alert("Houve um erro ao enviar seu feedback. Por favor, tente novamente mais tarde.");
+    }
+});
 
-        // Enviando o feedback para o Telegram
-        try {
-            const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    chat_id: chatId,
-                    text: feedbackMessage
-                })
-            });
+// Função para notificar o administrador sobre abuso
+async function notifyAdmin(username) {
+    const token = "7545142881:AAHD_s9gLTIpOUqHDfnu1_rGtDytwaerf_g"; // Insira seu token do bot
+    const adminChatId = "5251287851"; // Insira o chat ID do administrador
 
-            // Verifica se a resposta é OK
-            if (!response.ok) {
-                throw new Error('Erro ao enviar feedback para o Telegram');
-            }
-
-            // Limpa o formulário após o envio
-            document.getElementById('feedbackForm').reset();
-
-            alert("Feedback enviado com sucesso!");
-        } catch (error) {
-            console.error(error);
-            alert("Houve um erro ao enviar seu feedback. Por favor, tente novamente mais tarde.");
-        }
-    });
-</script>
+    const notificationMessage = `Usuário bloqueado por abuso:\n\nNome: ${username}\nMotivo: Envio excessivo de feedbacks.`;
+    
+    try {
+        await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chat_id: adminChatId,
+                text: notificationMessage
+            })
+        });
+    } catch (error) {
+        console.error('Erro ao notificar o administrador:', error);
+    }
+}

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InnoBot Vazamentos</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            color: #000;
+            background-color: #fff;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Estilos do menu */
+        #navbar {
+            position: fixed;
+            width: 100%;
+            background: #f0f0f0;
+            padding: 15px 20px;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #navbar h1 {
+            margin: 0;
+            font-size: 2em;
+            color: #000;
+        }
+
+        #navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+        }
+
+        #navbar ul li a {
+            color: #000;
+            text-decoration: none;
+            padding: 10px 15px;
+            transition: color 0.3s;
+        }
+
+        #navbar ul li a:hover {
+            color: #555;
+        }
+
+        /* Efeitos de partículas */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        h2 {
+            font-size: 3em;
+            margin: 20px 0;
+            opacity: 0; /* Esconde inicialmente */
+            transition: opacity 0.5s;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            font-size: 1.5em;
+            display: none; /* Esconde inicialmente */
+            transition: display 0.5s; /* Transição suave para o display */
+        }
+
+        li {
+            margin: 15px 0;
+        }
+
+        a {
+            color: #000;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #555;
+        }
+
+        /* Estilos para a seção de feedback */
+        #feedback {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        #feedback h3 {
+            margin: 0;
+            font-size: 2.5em;
+            color: #000;
+        }
+
+        #feedback form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #feedback input[type="text"],
+        #feedback textarea {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s;
+        }
+
+        #feedback input[type="text"]:focus,
+        #feedback textarea:focus {
+            border-color: #000;
+        }
+
+        #feedback button {
+            padding: 10px 20px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #feedback button:hover {
+            background: #555;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+</head>
+<body>
+
+    <div id="navbar">
+        <h1>InnoBot</h1>
+        <ul>
+            <li><a href="#" id="homeLink">Início</a></li>
+            <li><a href="#" id="linksToggle">Links</a></li>
+            <li><a href="#sobre">Sobre</a></li>
+            <li><a href="#feedback">Feedback</a></li>
+            <li><a href="https://t.me/SuporteInno" target="_blank">Contato</a></li>
+        </ul>
+    </div>
+
+    <div id="particles-js"></div>
+    
+    <div id="content">
+        <h2 id="home">Todos links abaixo</h2>
+        <ul id="linksList" class="hidden">
+            <!-- Os links serão inseridos aqui -->
+        </ul>
+        <h2 id="sobre" class="hidden">Sobre</h2>
+        <p class="hidden">Aqui você encontrará uma coleção de vazamentos recentes. Fique atento!</p>
+        
+        <!-- Seção de feedback -->
+        <div id="feedback">
+            <h3>Deixe seu Feedback</h3>
+            <form id="feedbackForm">
+                <input type="text" id="feedbackName" placeholder="Seu Nome" required>
+                <textarea id="feedbackMessage" rows="4" placeholder="Seu feedback aqui..." required></textarea>
+                <button type="submit">Enviar Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 InnoBotCorporation. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // Inicializando Particles.js
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 100 },
+                size: { value: 3 },
+                move: {
+                    speed: 1,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    out_mode: "out"
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#000",
+                    opacity: 0.4,
+                    width: 1
+                },
+                opacity: {
+                    value: 0.5
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "repulse" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                },
+                modes: {
+                    grab: { distance: 400, line_linked: { opacity: 1 } },
+                    bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 },
+                    repulse: { distance: 200, duration: 0.4 },
+                    push: { particles_nb: 4 },
+                    remove: { particles_nb: 2 }
+                }
+            },
+            retina_detect: true
+        });
+
+        // Defina seus links diretamente aqui
+        const links = [
+            { name: "Arquivo 1", url: "https://exemplo.com/arquivo1" },
+            { name: "Arquivo 2", url: "https://exemplo.com/arquivo2" },
+            { name: "Arquivo 3", url: "https://exemplo.com/arquivo3" },
+            // Adicione mais links conforme necessário
+        ];
+
+        // Função para carregar links no HTML
+        function loadLinks() {
+            const linksList = document.getElementById('linksList');
+            links.forEach(link => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = link.url;
+                a.textContent = link.name;
+                a.target = "_blank"; // Abre o link em nova aba
+                li.appendChild(a);
+                linksList.appendChild(li);
+            });
+        }
+
+        // Mostrar conteúdo inicial ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            const homeSection = document.getElementById('home');
+            homeSection.style.opacity = '1'; // Torna a seção inicial visível
+        });
+
+        // Alternar a visibilidade da lista de links
+        document.getElementById('linksToggle').addEventListener('click', function(event) {
+            event.preventDefault();
+            const linksList = document.getElementById('linksList');
+            const homeSection = document.getElementById('home');
+            const sobreSection = document.getElementById('sobre');
+            const sobreText = sobreSection.nextElementSibling;
+
+            // Toggle da exibição dos links
+            if (linksList.classList.contains('hidden')) {
+                linksList.classList.remove('hidden');
+                linksList.style.display = 'block';
+                setTimeout(() => {
+                    linksList.style.opacity = '1';
+                }, 10); // Para permitir a transição
+            } else {
+                linksList.style.opacity = '0';
+                setTimeout(() => {
+                    linksList.classList.add('hidden');
+                    linksList.style.display = 'none';
+                }, 300); // Tempo para a transição de ocultação
+            }
+        });
+
+        // Carregar os links ao iniciar a página
+        loadLinks();
+
+        // Manipulação do formulário de feedback
+        document.getElementById('feedbackForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('feedbackName').value;
+            const message = document.getElementById('feedbackMessage').value;
+
+            // Enviar feedback para o canal do Telegram (ajuste o URL e os parâmetros conforme necessário)
+            const feedbackData = {
+                name: name,
+                message: message,
+                date: new Date().toLocaleString()
+            };
+
+            fetch('https://api.telegram.org/bot<7545142881:AAHD_s9gLTIpOUqHDfnu1_rGtDytwaerf_g>/sendMessage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_id: '<-1002018953064>',
+                    text: `Nome: ${feedbackData.name}\nData: ${feedbackData.date}\nFeedback: ${feedbackData.message}`
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Feedback enviado com sucesso!');
+                document.getElementById('feedbackForm').reset(); // Limpa o formulário
+            })
+            .catch((error) => {
+                console.error('Erro ao enviar feedback:', error);
+                alert('Ocorreu um erro ao enviar o feedback. Tente novamente mais tarde.');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -292,14 +292,7 @@
     // Carregar os links ao iniciar a página
     loadLinks();
 
-    // Estrutura para armazenar contagem de feedbacks e bloqueios
-const feedbackCount = {};
-const blockTime = {}; // Armazena o tempo de bloqueio
-const offensiveWords = [
-    'gozar', 'cu', 'delicia', 'safado', 'cuzin', 'rola', 'pau'
-]; // Adicione suas palavras ofensivas aqui
-
-document.getElementById('feedbackForm').addEventListener('submit', async function(event) {
+  document.getElementById('feedbackForm').addEventListener('submit', async function(event) {
     event.preventDefault();
 
     const name = document.getElementById('feedbackName').value.trim();
@@ -311,12 +304,10 @@ document.getElementById('feedbackForm').addEventListener('submit', async functio
         return;
     }
 
-    // Verifica se o usuário está bloqueado
-    const currentTime = Date.now();
-    if (blockTime[name] && (currentTime - blockTime[name]) < 60000) { // 1 minuto em milissegundos
-        alert("Você está bloqueado de enviar feedbacks por 1 minuto devido ao abuso.");
-        return;
-    }
+    // Lista de palavras ofensivas
+    const offensiveWords = [
+        'gozar', 'cu', 'delicia', 'safado', 'cuzin', 'rola', 'pau'
+    ]; // Adicione suas palavras ofensivas aqui
 
     // Verifica se a mensagem contém palavras ofensivas
     const containsOffensiveWords = offensiveWords.some(word => message.toLowerCase().includes(word));
@@ -325,39 +316,28 @@ document.getElementById('feedbackForm').addEventListener('submit', async functio
         return;
     }
 
-    // Contabiliza o feedback
-    feedbackCount[name] = (feedbackCount[name] || 0) + 1;
-
-    // Verifica se o usuário está abusando
-    if (feedbackCount[name] > 3) { // Defina um limite, por exemplo, 3
-        alert("Você está abusando do sistema de feedback. Por favor, explique o motivo.");
-        blockTime[name] = currentTime; // Bloqueia o usuário
-        notifyAdmin(name);
-        return;
-    }
-
-    // Montando a mensagem de feedback
+    // Montando a mensagem a ser enviada
     const feedbackMessage = `Feedback Registrado:\n\nNome: ${name}\nMensagem: ${message}`;
 
     // Defina o URL do bot do Telegram
     const token = "7545142881:AAHD_s9gLTIpOUqHDfnu1_rGtDytwaerf_g"; // Insira seu token do bot
-    const feedbackChatId = "-1002211965858"; // Insira seu chat ID do grupo de feedback
+    const chatId = "-1002211965858"; // Insira seu chat ID
 
     // Enviando o feedback para o Telegram
     try {
-        const feedbackResponse = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                chat_id: feedbackChatId,
+                chat_id: chatId,
                 text: feedbackMessage
             })
         });
 
         // Verifica se a resposta é OK
-        if (!feedbackResponse.ok) {
+        if (!response.ok) {
             throw new Error('Erro ao enviar feedback para o Telegram');
         }
 
@@ -370,26 +350,3 @@ document.getElementById('feedbackForm').addEventListener('submit', async functio
         alert("Houve um erro ao enviar seu feedback. Por favor, tente novamente mais tarde.");
     }
 });
-
-// Função para notificar o administrador sobre abuso
-async function notifyAdmin(username) {
-    const token = "7545142881:AAHD_s9gLTIpOUqHDfnu1_rGtDytwaerf_g"; // Insira seu token do bot
-    const adminChatId = "5251287851"; // Insira o chat ID do administrador
-
-    const notificationMessage = `Usuário bloqueado por abuso:\n\nNome: ${username}\nMotivo: Envio excessivo de feedbacks.`;
-    
-    try {
-        await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                chat_id: adminChatId,
-                text: notificationMessage
-            })
-        });
-    } catch (error) {
-        console.error('Erro ao notificar o administrador:', error);
-    }
-}

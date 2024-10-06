@@ -3,145 +3,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Previsão do Tempo</title>
+    <title>InnoBot Vazamentos</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(to bottom right, #2193b0, #6dd5ed);
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            color: #000;
+            background-color: #fff;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Estilos do menu */
+        #navbar {
+            position: fixed;
+            width: 100%;
+            background: #f0f0f0;
+            padding: 15px 20px;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #navbar h1 {
+            margin: 0;
+            font-size: 2em;
+            color: #000;
+        }
+
+        #navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: #fff;
+        }
+
+        #navbar ul li a {
+            color: #000;
+            text-decoration: none;
+            padding: 10px 15px;
+            transition: color 0.3s;
+        }
+
+        #navbar ul li a:hover {
+            color: #555;
+        }
+
+        /* Efeitos de partículas */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #content {
+            position: relative;
+            z-index: 2;
             text-align: center;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(15px);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .container:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
-        }
-
-        input {
-            padding: 12px;
-            width: 220px;
-            border: none;
-            border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-            margin-right: 10px;
-            transition: box-shadow 0.3s;
-        }
-
-        input:focus {
-            outline: none;
-            box-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
-        }
-
-        button {
-            padding: 12px;
-            border: none;
-            background-color: #28a745;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-
-        button:hover {
-            background-color: #218838;
-            transform: translateY(-2px);
-        }
-
-        #weatherDisplay {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
-            transition: background 0.3s;
+            padding: 100px 20px;
         }
 
         h2 {
+            font-size: 3em;
+            margin: 20px 0;
+            opacity: 0; /* Esconde inicialmente */
+            transition: opacity 0.5s;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            font-size: 1.5em;
+            display: none; /* Esconde inicialmente */
+            transition: display 0.5s; /* Transição suave para o display */
+        }
+
+        li {
+            margin: 15px 0;
+        }
+
+        a {
+            color: #000;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: #555;
+        }
+
+        /* Estilos para a seção de feedback */
+        #feedback {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        #feedback h3 {
             margin: 0;
-            font-size: 24px;
+            font-size: 2.5em;
+            color: #000;
         }
 
-        p {
-            margin: 5px 0;
-            font-size: 18px;
+        #feedback form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* Animações para exibir informações de clima */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
+        #feedback input[type="text"],
+        #feedback textarea {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        #feedback input[type="text"]:focus,
+        #feedback textarea:focus {
+            border-color: #000;
         }
+
+        #feedback button {
+            padding: 10px 20px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #feedback button:hover {
+            background: #555;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 10px;
+            width: 100%;
+            text-align: center;
+            z-index: 2;
+        }
+
+        .hidden {
+            display: none;
+        }
+
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Previsão do Tempo</h1>
-        <input type="text" id="cityInput" placeholder="Digite uma cidade...">
-        <button id="searchButton">Buscar</button>
-        <div id="weatherDisplay" class="fade-in"></div>
-    </div>
-    <script>
-        const apiKey = '10e10dd911944d4b900210728240610'; // Sua chave da API
-        const searchButton = document.getElementById('searchButton');
-        const cityInput = document.getElementById('cityInput');
-        const weatherDisplay = document.getElementById('weatherDisplay');
 
-        searchButton.addEventListener('click', () => {
-            const city = cityInput.value;
-            getWeather(city);
+    <div id="navbar">
+        <h1>InnoBot</h1>
+        <ul>
+            <li><a href="#" id="homeLink">Início</a></li>
+            <li><a href="#" id="linksToggle">Links</a></li>
+            <li><a href="#feedback">Feedback</a></li>
+            <li><a href="https://t.me/SuporteInno" target="_blank">Contato</a></li>
+        </ul>
+    </div>
+
+    <div id="particles-js"></div>
+    
+    <div id="content">
+        <h2 id="home">Todos links abaixo</h2>
+        <ul id="linksList" class="hidden">
+            <!-- Os links serão inseridos aqui -->
+        </ul>
+        <h2 id="sobre" class="hidden">Sobre</h2>
+        <p class="hidden">Aqui você encontrará uma coleção de vazamentos recentes. Fique atento!</p>
+        
+        <!-- Seção de feedback -->
+        <div id="feedback">
+            <h3>Deixe seu Feedback</h3>
+            <form id="feedbackForm">
+                <input type="text" id="feedbackName" placeholder="Seu Nome" required>
+                <textarea id="feedbackMessage" rows="4" placeholder="Seu feedback aqui..." required></textarea>
+                <button type="submit">Enviar Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 InnoBotCorporation. Todos os direitos reservados.</p>
+    </footer>
+
+  <script>
+    // Inicializando Particles.js
+    particlesJS("particles-js", {
+        particles: {
+            number: { value: 100 },
+            size: { value: 3 },
+            move: {
+                speed: 1,
+                direction: "none",
+                random: true,
+                straight: false,
+                out_mode: "out"
+            },
+            line_linked: {
+                enable: true,
+                distance: 150,
+                color: "#000",
+                opacity: 0.4,
+                width: 1
+            },
+            opacity: {
+                value: 0.5
+            }
+        },
+        interactivity: {
+            detect_on: "canvas",
+            events: {
+                onhover: { enable: true, mode: "repulse" },
+                onclick: { enable: true, mode: "push" },
+                resize: true
+            },
+            modes: {
+                grab: { distance: 400, line_linked: { opacity: 1 } },
+                bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 },
+                repulse: { distance: 200, duration: 0.4 },
+                push: { particles_nb: 4 },
+                remove: { particles_nb: 2 }
+            }
+        },
+        retina_detect: true
+    });
+
+    // Defina seus links diretamente aqui
+    const links = [
+        { name: "Pack de bots V1 Dc", url: "https://apkadmin.com/naeewpwqm9h8/Pack_de_bot_dc.7z.html" },
+        { name: "Pack de bots V2 Dc", url: "https://apkadmin.com/p33zkj9rcxx2/Pack_bots_dc_v2.zip.html" },
+        { name: "Bot Spam V1 Tg", url: "https://apkadmin.com/xdv6uq67e589/Bot_spam_Telegram.zip.html" },
+        { name: "Site gerador iptv e chat gpt", url: "https://apkadmin.com/pyrqpk6n2m0f/site_com_chat_gpt_e_iptv.zip.html" },
+        { name: "Pack sites V1", url: "https://apkadmin.com/bwigugbm5qmb/Pack_3_sites_diferentes.zip.html" },
+        { name: "Pack de sensi(ff)", url: "https://apkadmin.com/m595vxg25xjb/INFINITY_SENSI_ANDROID_______40_pack_vip__41_.zip.html" },
+        { name: "Site calculadora", url: "https://apkadmin.com/iab7pf9qvt95/Calculadora.zip.html" },
+// Adicione mais links conforme necessário
+    ];
+
+    // Função para carregar links no HTML
+    function loadLinks() {
+        const linksList = document.getElementById('linksList');
+        links.forEach(link => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = link.url;
+            a.textContent = link.name;
+            a.target = "_blank"; // Abre o link em nova aba
+            li.appendChild(a);
+            linksList.appendChild(li);
+        });
+    }
+
+    // Mostrar conteúdo inicial ao carregar a página
+    document.addEventListener('DOMContentLoaded', function() {
+        const homeSection = document.getElementById('home');
+        homeSection.style.opacity = '1'; // Torna a seção inicial visível
+    });
+
+    // Alternar a visibilidade da lista de links
+    document.getElementById('linksToggle').addEventListener('click', function(event) {
+        event.preventDefault();
+        const linksList = document.getElementById('linksList');
+
+        // Toggle da exibição dos links
+        if (linksList.classList.contains('hidden')) {
+            linksList.classList.remove('hidden');
+            linksList.style.display = 'block';
+            setTimeout(() => {
+                linksList.style.opacity = '1';
+            }, 10); // Para permitir a transição
+        } else {
+            linksList.style.opacity = '0';
+            setTimeout(() => {
+                linksList.classList.add('hidden');
+                linksList.style.display = 'none';
+            }, 300); // Tempo para a transição de ocultação
+        }
+    });
+
+    // Carregar os links ao iniciar a página
+    loadLinks();
+
+  document.getElementById('feedbackForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('feedbackName').value.trim();
+    const message = document.getElementById('feedbackMessage').value.trim();
+
+    // Validação básica
+    if (!name || !message) {
+        alert("Por favor, preencha todos os campos.");
+        return;
+    }
+
+    // Lista de palavras ofensivas
+    const offensiveWords = [
+        'gozar', 'cu', 'delicia', 'safado', 'cuzin', 'rola', 'pau', 'gay', 'viado', 'dar', 'mulheres', 'bunda', 'xereca',
+    ]; // Adicione suas palavras ofensivas aqui
+
+    // Verifica se a mensagem contém palavras ofensivas
+    const containsOffensiveWords = offensiveWords.some(word => message.toLowerCase().includes(word));
+    if (containsOffensiveWords) {
+        alert("Sua mensagem contém palavras ofensivas e não pode ser enviada.");
+        return;
+    }
+
+    // Montando a mensagem a ser enviada
+    const feedbackMessage = `Feedback Registrado:\n\nNome: ${name}\nMensagem: ${message}`;
+
+    // Defina o URL do bot do Telegram
+    const token = "7545142881:AAHD_s9gLTIpOUqHDfnu1_rGtDytwaerf_g"; // Insira seu token do bot
+    const chatId = "-1002211965858"; // Insira seu chat ID
+
+    // Enviando o feedback para o Telegram
+    try {
+        const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: feedbackMessage
+            })
         });
 
-        async function getWeather(city) {
-            try {
-                const response = await fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&lang=pt`);
-                if (!response.ok) {
-                    throw new Error('Cidade não encontrada');
-                }
-                const data = await response.json();
-                displayWeather(data);
-            } catch (error) {
-                weatherDisplay.innerHTML = `<p>${error.message}</p>`;
-            }
+        // Verifica se a resposta é OK
+        if (!response.ok) {
+            throw new Error('Erro ao enviar feedback para o Telegram');
         }
 
-        function displayWeather(data) {
-            const { name, region, country } = data.location;
-            const { temp_c, condition, humidity, wind_kph } = data.current;
-            const weatherInfo = `
-                <h2>${name}, ${region}, ${country}</h2>
-                <p>Temperatura: ${temp_c}°C</p>
-                <p>Condição: ${condition.text}</p>
-                <p>Umidade: ${humidity}%</p>
-                <p>Vento: ${wind_kph} km/h</p>
-            `;
-            weatherDisplay.innerHTML = weatherInfo;
-            weatherDisplay.classList.add('fade-in'); // Adiciona a classe de animação
+        // Limpa o formulário após o envio
+        document.getElementById('feedbackForm').reset();
+
+        alert("Feedback enviado com sucesso!");
+    } catch (error) {
+        console.error(error);
+        alert("Houve um erro ao enviar seu feedback. Por favor, tente novamente mais tarde.");
         }
-    </script>
-</body>
-</html>
+    });
+</script>
